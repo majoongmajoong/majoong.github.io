@@ -3,1120 +3,848 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>나의 귀여운 일기장 🐸🐱</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <title>우리 가족 퀴즈</title>
+    <link href="https://fonts.googleapis.com/css2?family=Jua&family=Nanum+Pen+Script&family=Gothic+A1:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        /* 전반적인 분위기: 귀엽고 따뜻한 느낌, 파스텔 톤 색상 */
+        /* 기본 CSS 초기화 및 전역 스타일 */
         body {
-            font-family: 'Inter', sans-serif; /* 기본 폰트 설정 */
-            background-color: #f7f2e9; /* 연한 베이지색 배경 */
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            font-family: 'Jua', sans-serif; /* 기본 폰트 설정 */
+            background: linear-gradient(135deg, #ADD8E6, #98FB98); /* 연파랑, 연두색 그라데이션 배경 */
             display: flex;
             justify-content: center;
-            align-items: flex-start; /* 상단 정렬 */
-            min-height: 100vh;
-            box-sizing: border-box;
-            color: #5a4a42; /* 부드러운 갈색 텍스트 */
+            align-items: center;
+            min-height: 100vh; /* 뷰포트 높이 전체 사용 */
+            color: #333333; /* 기본 텍스트 색상 */
+            /* overflow: hidden; /* 스크롤 문제 해결을 위해 이 속성 제거 */
         }
 
-        .container {
-            background-color: #ffffff; /* 흰색 컨테이너 배경 */
+        #app-container {
+            background-color: rgba(255, 255, 255, 0.9); /* 반투명 흰색 배경 */
             border-radius: 25px; /* 둥근 모서리 */
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); /* 부드러운 그림자 */
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2); /* 그림자 효과 */
             padding: 30px;
-            max-width: 700px; /* 최대 너비 설정 */
-            width: 100%; /* 모바일에서 전체 너비 사용 */
-            box-sizing: border-box;
+            width: 90%; /* 모바일 화면에 맞게 너비 조정 */
+            max-width: 800px; /* 최대 너비 설정 */
+            text-align: center;
+            box-sizing: border-box; /* 패딩 포함 너비 계산 */
+            position: relative; /* 애니메이션 컨테이너 기준 */
+            /* 스크롤 문제 해결: 컨테이너 내부 스크롤 허용 */
+            max-height: calc(100vh - 60px); /* 뷰포트 높이에서 상하 여백 30px*2=60px 제외 */
+            overflow-y: auto; /* 내용이 넘칠 경우 세로 스크롤바 표시 */
+            -webkit-overflow-scrolling: touch; /* iOS에서 부드러운 스크롤 */
+        }
+
+        .game-screen {
             display: flex;
             flex-direction: column;
-            gap: 20px; /* 섹션 간 간격 */
-            margin-top: 20px; /* 상단 여백 */
+            gap: 20px;
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out; /* 화면 전환 애니메이션 */
+            opacity: 1;
+            transform: translateY(0);
         }
 
-        /* 헤더 스타일링 */
-        .header {
-            text-align: center;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
+        .game-screen.hidden {
+            opacity: 0;
+            transform: translateY(20px);
+            position: absolute; /* 숨겨진 화면은 공간을 차지하지 않도록 */
+            top: 30px; /* app-container의 패딩과 동일하게 설정 */
+            left: 30px;
+            right: 30px;
+            pointer-events: none; /* 숨겨진 화면의 이벤트 비활성화 */
+        }
+
+        h1, h2 {
+            font-family: 'Jua', sans-serif;
+            color: #333333;
             margin-bottom: 20px;
         }
 
-        .header h1 {
-            color: #ff9a8d; /* 따뜻한 주황색 제목 */
-            font-size: 2.5em;
-            margin: 0;
-            font-weight: 600;
+        h1 {
+            font-size: 2.5em; /* 제목 크기 */
+            color: #4CAF50; /* 강조 색상 */
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
         }
 
-        /* 각 섹션 공통 스타일 */
-        .section {
-            background-color: #fcf8f3; /* 연한 배경색 */
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05); /* 은은한 내부 그림자 */
+        h2 {
+            font-size: 1.8em;
+            color: #3F51B5;
         }
 
-        .section h2 {
-            color: #a8d5ba; /* 민트색 제목 */
-            margin-top: 0;
-            font-size: 1.5em;
-            border-bottom: 2px solid #e0f2e8;
-            padding-bottom: 10px;
-            margin-bottom: 15px;
-        }
-
-        /* 날짜 선택 및 표시 */
-        .date-selection input[type="date"] {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #e0f2e8; /* 연한 민트색 테두리 */
-            border-radius: 10px;
-            font-size: 1em;
-            color: #5a4a42;
-            box-sizing: border-box;
-            background-color: #ffffff;
-        }
-
-        /* 일기 작성 영역 */
-        .diary-entry textarea {
-            width: 100%;
-            min-height: 200px;
-            padding: 15px;
-            border: 2px solid #e0f2e8;
-            border-radius: 10px;
+        p {
+            font-family: 'Gothic A1', sans-serif;
             font-size: 1.1em;
             line-height: 1.6;
-            color: #5a4a42;
-            resize: vertical; /* 세로 크기 조절 가능 */
-            box-sizing: border-box;
-            background-color: #ffffff;
         }
 
-        /* 감정/태그 선택 */
-        .emotion-tags .options {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .emotion-tags .option {
-            padding: 10px 15px;
-            border-radius: 20px;
-            background-color: #ffe0b2; /* 연한 주황색 배경 */
-            color: #a0522d; /* 진한 주황색 텍스트 */
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-            font-weight: 600;
-            white-space: nowrap; /* 텍스트가 줄바꿈되지 않도록 */
-        }
-
-        .emotion-tags .option:hover {
-            background-color: #ffd180;
-            transform: translateY(-2px);
-        }
-
-        .emotion-tags .option.selected {
-            background-color: #ff9a8d; /* 선택 시 더 진한 색 */
-            color: #ffffff;
-            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
-        }
-
-        /* 사진 첨부 */
-        .photo-attachment input[type="file"] {
-            display: none; /* 기본 파일 입력 숨기기 */
-        }
-
-        .photo-attachment .custom-file-upload {
-            display: inline-block;
-            padding: 10px 20px;
-            background-color: #a8d5ba; /* 민트색 버튼 */
-            color: white;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            font-weight: 600;
-            margin-bottom: 15px; /* 파일 업로드 버튼 아래 여백 */
-        }
-
-        .photo-attachment .custom-file-upload:hover {
-            background-color: #8ecaa1;
-        }
-
-        /* 여러 이미지 미리보기 컨테이너 */
-        #imagePreviewsContainer {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        /* 이미지 미리보기 개별 아이템 */
-        .image-preview-item {
-            position: relative;
-            max-width: 100px;
-            max-height: 100px;
-            border-radius: 10px;
-            border: 2px dashed #e0f2e8;
-            padding: 5px;
-            cursor: pointer;
-            transition: transform 0.2s ease;
-        }
-
-        .image-preview-item:hover {
-            transform: scale(1.05);
-        }
-
-        .image-preview-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 8px; /* 부모의 둥근 모서리에 맞춤 */
-        }
-
-        /* 이미지 삭제 버튼 */
-        .image-delete-button {
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            background-color: #ff7f7f;
-            color: white;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 0.8em;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            transition: background-color 0.2s ease;
-        }
-
-        .image-delete-button:hover {
-            background-color: #ff6363;
-        }
-
-
-        /* 버튼 그룹 */
-        .button-group {
-            display: flex;
-            flex-wrap: wrap; /* 모바일에서 줄바꿈 */
-            gap: 15px;
-            justify-content: center;
-        }
-
-        .button-group button {
-            padding: 12px 25px;
-            border: none;
-            border-radius: 15px;
+        /* 입력 필드 및 드롭다운 스타일 */
+        textarea, input[type="text"], select {
+            width: calc(100% - 20px); /* 패딩 고려 */
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 2px solid #B2EBF2; /* 연한 테두리 */
+            border-radius: 12px; /* 둥근 모서리 */
             font-size: 1.1em;
-            font-weight: 600;
+            font-family: 'Gothic A1', sans-serif;
+            box-sizing: border-box;
+            outline: none; /* 포커스 시 아웃라인 제거 */
+            transition: border-color 0.3s ease;
+        }
+
+        textarea:focus, input[type="text"]:focus, select:focus {
+            border-color: #4CAF50; /* 포커스 시 강조 색상 */
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical; /* 세로 크기 조절 가능 */
+        }
+
+        /* 버튼 스타일 */
+        .cute-button {
+            background-color: #FFC107; /* 활기찬 파스텔톤 노란색 */
+            color: white;
+            padding: 15px 25px;
+            border: none;
+            border-radius: 15px; /* 둥근 모서리 */
+            font-size: 1.2em;
+            font-weight: bold;
             cursor: pointer;
             transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            color: white;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15); /* 그림자 효과 */
+            display: inline-block; /* 텍스트 크기에 맞게 너비 조절 */
+            margin: 5px;
         }
 
-        .button-group button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        .cute-button:hover {
+            background-color: #FFA000; /* 호버 시 더 진한 색상 */
+            transform: translateY(-3px); /* 살짝 위로 올라오는 효과 */
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
         }
 
-        .button-group #saveButton {
-            background-color: #ffbe76; /* 연한 주황색 */
-        }
-        .button-group #saveButton:hover {
-            background-color: #ffa54f;
+        .cute-button:active {
+            transform: translateY(0); /* 클릭 시 원위치 */
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
         }
 
-        .button-group #editButton {
-            background-color: #a8d5ba; /* 민트색 */
-        }
-        .button-group #editButton:hover {
-            background-color: #8ecaa1;
+        /* 특정 버튼 색상 */
+        #start-game-btn { background-color: #4CAF50; } /* 초록색 */
+        #start-game-btn:hover { background-color: #388E3C; }
+        #load-text-csv-btn, #load-url-csv-btn { background-color: #607D8B; } /* 회색 톤 */
+        #load-text-csv-btn:hover, #load-url-csv-btn:hover { background-color: #455A64; }
+
+        /* 4지선다 선택지 버튼 스타일 */
+        .answer-options-container {
+            display: grid; /* 그리드 레이아웃 사용 */
+            grid-template-columns: 1fr 1fr; /* 두 개의 열로 나눔 */
+            gap: 15px; /* 버튼 간 간격 */
+            margin-top: 20px;
+            margin-bottom: 20px;
         }
 
-        .button-group #deleteButton {
-            background-color: #ff7f7f; /* 연한 빨강색 */
-        }
-        .button-group #deleteButton:hover {
-            background-color: #ff6363;
-        }
-
-        /* 일기 목록/달력 (간단한 목록 형태로 구현) */
-        .diary-list ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        .diary-list li {
-            background-color: #fffacd; /* 연한 노랑색 */
-            margin-bottom: 10px;
-            padding: 12px 15px;
-            border-radius: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        .answer-option-button {
+            background-color: #90CAF9; /* 연한 파란색 */
+            color: #333333;
+            padding: 15px;
+            border: 2px solid #64B5F6;
+            border-radius: 15px;
+            font-size: 1.1em;
+            font-family: 'Gothic A1', sans-serif;
+            font-weight: bold;
             cursor: pointer;
-            transition: background-color 0.3s ease;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            word-break: keep-all; /* 단어 단위 줄바꿈 */
         }
 
-        .diary-list li:hover {
-            background-color: #fff8dc;
-        }
-
-        .diary-list li span {
-            font-weight: 600;
-            color: #a0522d;
-        }
-
-        .diary-list li button {
-            background-color: #ff9a8d;
+        .answer-option-button:hover {
+            background-color: #42A5F5; /* 호버 시 더 진한 파란색 */
             color: white;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.9em;
-            transition: background-color 0.3s ease;
-        }
-
-        .diary-list li button:hover {
-            background-color: #ff7f7f;
-        }
-
-        /* 검색 기능 */
-        .search-diary {
-            display: flex;
-            gap: 10px;
-        }
-
-        .search-diary input[type="text"] {
-            flex-grow: 1;
-            padding: 12px;
-            border: 2px solid #e0f2e8;
-            border-radius: 10px;
-            font-size: 1em;
-            color: #5a4a42;
-            box-sizing: border-box;
-            background-color: #ffffff;
-        }
-
-        .search-diary button {
-            padding: 12px 20px;
-            background-color: #ffbe76;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: background-color 0.3s ease;
-        }
-
-        .search-diary button:hover {
-            background-color: #ffa54f;
-        }
-
-        #searchResults {
-            margin-top: 15px;
-            padding-top: 10px;
-            border-top: 1px dashed #e0f2e8;
-        }
-
-        #searchResults div {
-            background-color: #fcf8f3;
-            padding: 10px;
-            border-radius: 8px;
-            margin-bottom: 8px;
-            font-size: 0.95em;
-            color: #5a4a42;
-        }
-
-        /* 백업 기능 */
-        .backup-diary .date-range {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-            flex-wrap: wrap; /* 모바일에서 줄바꿈 */
-        }
-
-        .backup-diary .date-range input[type="date"] {
-            flex: 1;
-            min-width: 120px; /* 최소 너비 설정 */
-            padding: 12px;
-            border: 2px solid #e0f2e8;
-            border-radius: 10px;
-            font-size: 1em;
-            color: #5a4a42;
-            box-sizing: border-box;
-            background-color: #ffffff;
-        }
-
-        .backup-diary button {
-            width: 100%;
-            padding: 12px 20px;
-            background-color: #76baff; /* 파란색 백업 버튼 */
-            color: white;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: background-color 0.3s ease;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .backup-diary button:hover {
-            background-color: #5a9ce0;
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
         }
 
-        /* 이미지 확대 모달 */
-        .image-modal {
-            display: none; /* 기본적으로 숨김 */
-            position: fixed;
-            z-index: 1002; /* 다른 요소 위에 표시 */
-            left: 0;
+        .answer-option-button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .answer-option-button.correct {
+            background-color: #81C784; /* 정답 시 연한 초록색 */
+            border-color: #4CAF50;
+        }
+        .answer-option-button.incorrect {
+            background-color: #E57373; /* 오답 시 연한 빨간색 */
+            border-color: #F44336;
+        }
+        .answer-option-button.disabled {
+            pointer-events: none; /* 클릭 비활성화 */
+            opacity: 0.7;
+        }
+
+
+        #check-answer-btn { background-color: #2196F3; } /* 파란색 */
+        #check-answer-btn:hover { background-color: #1976D2; }
+
+        #next-question-btn { background-color: #FF9800; } /* 주황색 */
+        #next-question-btn:hover { background-color: #FB8C00; }
+
+        #restart-game-btn { background-color: #F44336; } /* 빨간색 */
+        #restart-game-btn:hover { background-color: #D32F2F; }
+
+        /* 진행 상태 표시 */
+        #progress-display {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #607D8B; /* 회색 톤 */
+            margin-bottom: 20px;
+            background-color: #E0F2F7;
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        /* 피드백 메시지 영역 */
+        #feedback-message {
+            min-height: 50px; /* 메시지가 없어도 공간 유지 */
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-top: 15px;
+            margin-bottom: 15px;
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+
+        .correct-feedback {
+            color: #4CAF50; /* 초록색 */
+            animation: bounceIn 0.8s ease-out; /* 정답 애니메이션 */
+        }
+
+        .incorrect-feedback {
+            color: #F44336; /* 빨간색 */
+            animation: shake 0.5s ease-out; /* 오답 애니메이션 */
+        }
+
+        /* 오답 시 설명 */
+        #explanation-text {
+            font-size: 1.1em;
+            color: #795548; /* 갈색 톤 */
+            margin-top: 10px; /* 위쪽 여백 조정 */
+            margin-bottom: 15px;
+            font-family: 'Nanum Pen Script', cursive;
+            font-weight: bold;
+            opacity: 0.7; /* 반투명 효과 */
+        }
+
+        /* 결과 화면 스타일 */
+        #result-screen h2 {
+            color: #3F51B5;
+            font-size: 2em;
+        }
+
+        #score-display, #high-score-display {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #673AB7; /* 보라색 톤 */
+        }
+
+        /* 애니메이션 컨테이너 */
+        #animation-container {
+            position: absolute;
             top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            overflow: auto;
-            background-color: rgba(0,0,0,0.8); /* 반투명 검정 배경 */
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
+            pointer-events: none; /* 클릭 이벤트 방지 */
+            overflow: hidden; /* 컨테이너 밖으로 나가는 파티클 숨김 */
         }
 
-        .image-modal-content {
-            margin: auto;
-            display: block;
-            max-width: 90%;
-            max-height: 90%;
-            object-fit: contain; /* 이미지 비율 유지 */
-            border-radius: 15px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.5);
-        }
-
-        .image-modal-close {
+        /* 파티클 애니메이션 (폭죽/반짝이) */
+        .particle {
             position: absolute;
-            top: 20px;
-            right: 35px;
-            color: #f1f1f1;
-            font-size: 40px;
-            font-weight: bold;
-            transition: 0.3s;
-            cursor: pointer;
+            background-color: white;
+            border-radius: 50%;
+            opacity: 0;
+            animation: particle-fade-out 1s forwards;
         }
 
-        .image-modal-close:hover,
-        .image-modal-close:focus {
-            color: #bbb;
-            text-decoration: none;
-            cursor: pointer;
+        /* 키프레임 애니메이션 */
+        @keyframes bounceIn {
+            0% { opacity: 0; transform: scale(0.3); }
+            50% { opacity: 1; transform: scale(1.1); }
+            70% { transform: scale(0.9); }
+            100% { transform: scale(1); }
         }
 
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+            100% { transform: translateX(0); }
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+            20% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+        }
+
+        @keyframes particle-fade-out {
+            0% { opacity: 1; transform: scale(0.5); }
+            100% { opacity: 0; transform: scale(1.5); }
+        }
 
         /* 모바일 반응형 디자인 */
         @media (max-width: 600px) {
-            body {
-                padding: 10px;
-            }
-
-            .container {
+            #app-container {
                 padding: 20px;
-                margin-top: 10px;
+                border-radius: 15px;
+                width: 95%; /* 더 작은 화면에 맞게 너비 조정 */
+                /* 모바일에서 높이가 짧을 경우를 대비하여 max-height 조정 */
+                max-height: calc(100vh - 40px); /* 상하 여백 20px*2=40px 제외 */
             }
 
-            .header h1 {
+            h1 {
                 font-size: 2em;
             }
 
-            .button-group button {
-                width: 100%; /* 버튼 너비 100% */
-                padding: 15px;
+            h2 {
+                font-size: 1.5em;
             }
 
-            /* "오늘의 기분 & 태그" 버튼 크기 개선 */
-            .emotion-tags .options {
-                flex-direction: row; /* 세로 정렬 대신 가로 정렬 유지 */
-                flex-wrap: wrap; /* 내용에 따라 줄바꿈 */
-                justify-content: center; /* 중앙 정렬 */
-                align-items: center;
+            .cute-button {
+                padding: 12px 20px;
+                font-size: 1.1em;
             }
 
-            .emotion-tags .option {
-                flex-shrink: 0; /* 줄어들지 않도록 방지 */
+            textarea, input[type="text"], select {
+                padding: 10px;
+                font-size: 1em;
             }
 
-            .search-diary {
-                flex-direction: column;
+            #feedback-message {
+                font-size: 1.1em;
             }
 
-            .search-diary button {
-                width: 100%;
-            }
-
-            .backup-diary .date-range {
-                flex-direction: column; /* 백업 날짜 선택 세로 정렬 */
+            .answer-options-container {
+                grid-template-columns: 1fr; /* 모바일에서는 한 열로 표시 */
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header class="header">
-            <h1>🐸 나의 소중한 일기 🐱</h1>
-        </header>
+    <div id="app-container">
+        <div id="start-screen" class="game-screen">
+            <h1>✨ 우리 가족 퀴즈 게임 ✨</h1>
+            <p>CSV 형식의 퀴즈 데이터를 아래에 직접 붙여넣거나, Google 스프레드시트의 공개 CSV URL을 입력하세요.</p>
 
-        <section class="section date-selection">
-            <h2>오늘의 날짜</h2>
-            <input type="date" id="diaryDate">
-        </section>
+            <label for="csv-text-input" style="font-weight: bold; margin-bottom: 5px; display: block;">CSV 텍스트 직접 붙여넣기:</label>
+            <textarea id="csv-text-input" placeholder="여기에 CSV 퀴즈 데이터를 붙여넣으세요. (예: 가족상식,아빠의 별명은?,슈퍼맨,배트맨,스파이더맨,아이언맨,아빠는 정말 멋진 영웅이셔!)"></textarea>
+            <button id="load-text-csv-btn" class="cute-button">텍스트 데이터 불러오기</button>
 
-        <section class="section emotion-tags">
-            <h2>오늘의 기분 & 태그</h2>
-            <div class="options">
-                <span class="option" data-value="happy">😊 행복</span>
-                <span class="option" data-value="sad">😢 슬픔</span>
-                <span class="option" data-value="angry">😡 화남</span>
-                <span class="option" data-value="excited">🤩 신남</span>
-                <span class="option" data-value="tired">😴 피곤</span>
-                <span class="option" data-value="love">💖 사랑</span>
-                <span class="option" data-value="daily">#일상</span>
-                <span class="option" data-value="study">#공부</span>
-                <span class="option" data-value="travel">#여행</span>
-                <span class="option" data-value="food">#음식</span>
-            </div>
-            <input type="hidden" id="selectedEmotion">
-            <input type="hidden" id="selectedTags">
-        </section>
+            <p style="margin-top: 20px; margin-bottom: 10px; font-weight: bold;">또는 Google 스프레드시트 URL로 불러오기:</p>
+            <p style="font-size: 0.9em; color: #666;">(스프레드시트에서 '파일 > 공유 > 웹에 게시 > 쉼표로 구분된 값(.csv)'으로 게시한 후 URL을 붙여넣으세요.)</p>
+            <input type="text" id="csv-url-input" placeholder="Google 스프레드시트 공개 CSV URL">
+            <button id="load-url-csv-btn" class="cute-button">URL 데이터 불러오기</button>
+            <div id="loading-indicator" style="display: none; margin-top: 10px; font-weight: bold; color: #2196F3;">데이터를 불러오는 중...</div>
 
-        <section class="section diary-entry">
-            <h2>오늘의 이야기</h2>
-            <textarea id="diaryContent" placeholder="오늘 하루는 어땠나요? 자유롭게 기록해보세요..."></textarea>
-        </section>
-
-        <section class="section photo-attachment">
-            <h2>사진 첨부</h2>
-            <label for="photoUpload" class="custom-file-upload">사진 선택</label>
-            <input type="file" id="photoUpload" accept="image/*" multiple>
-            <div id="imagePreviewsContainer">
-                </div>
-        </section>
-
-        <div class="button-group">
-            <button id="saveButton">저장 💾</button>
-            <button id="editButton">수정 ✏️</button>
-            <button id="deleteButton">삭제 🗑️</button>
+            <p style="margin-top: 20px;">퀴즈 종목을 선택하고 게임을 시작하세요:</p>
+            <select id="category-select">
+                <option value="">-- 종목 선택 --</option>
+            </select>
+            <button id="start-game-btn" class="cute-button">게임 시작</button>
         </div>
 
-        <section class="section diary-list">
-            <h2>내 일기 목록</h2>
-            <ul id="diaryList">
-                <li>아직 작성된 일기가 없어요.</li>
-            </ul>
-        </section>
-
-        <section class="section search-diary">
-            <h2>일기 검색</h2>
-            <input type="text" id="searchQuery" placeholder="검색할 내용을 입력하세요...">
-            <button id="searchButton">검색 🔍</button>
-            <div id="searchResults">
+        <div id="quiz-screen" class="game-screen hidden">
+            <div id="progress-display">1/10 문제</div>
+            <h2 id="question-category"></h2>
+            <p id="question-text"></p>
+            <div id="explanation-text"></div>
+            <div id="answer-options-container" class="answer-options-container">
                 </div>
-        </section>
+            <div id="feedback-message"></div>
+            <button id="next-question-btn" class="cute-button hidden">다음 문제</button>
+        </div>
 
-        <section class="section backup-diary">
-            <h2>일기 백업</h2>
-            <div class="date-range">
-                <input type="date" id="backupStartDate">
-                <span>~</span>
-                <input type="date" id="backupEndDate">
-            </div>
-            <button id="backupButton">백업 📥</button>
-        </section>
+        <div id="result-screen" class="game-screen hidden">
+            <h2>🎉 퀴즈 결과 🎉</h2>
+            <p id="score-display">총 0개 맞혔어요!</p>
+            <p id="high-score-display">최고 점수: 0개</p>
+            <button id="restart-game-btn" class="cute-button">다시 시작하기</button>
+        </div>
     </div>
 
-    <div id="imageModal" class="image-modal">
-        <span class="image-modal-close">&times;</span>
-        <img class="image-modal-content" id="modalImage">
-    </div>
+    <div id="animation-container"></div>
 
     <script>
+        // CSV 데이터 파싱 및 저장 변수
+        let quizData = []; // 전체 퀴즈 데이터를 저장할 배열
+        let currentQuiz = []; // 현재 게임에 출제될 10개의 문제를 저장할 배열
+        let currentQuestionIndex = 0; // 현재 풀고 있는 문제의 인덱스
+        let score = 0; // 현재 게임의 점수
+        let selectedCategory = ''; // 사용자가 선택한 퀴즈 종목
+        let highScore = 0; // 최고 점수 (로컬 스토리지에 저장)
+        let isAnswerChecked = false; // 정답 확인 상태 플래그
+
+        // 칭찬 메시지 배열 (다양한 칭찬 메시지 포함)
+        const positiveFeedback = [
+            "와우! 천재인가요?!",
+            "정답이에요! 정말 대단해요!",
+            "짝짝짝! 완벽한 정답!",
+            "최고예요! 역시 잘하는군요!",
+            "빙고! 정말 잘했어요!",
+            "환상적이에요! 퀴즈 왕이 될 것 같아요!",
+            "엄청나요! 이 문제를 맞추다니!",
+            "대단한 집중력이에요! 멋져요!",
+            "정말 똑똑하네요! 다음 문제도 기대돼요!",
+            "놀라워요! 당신의 지식에 박수를 보냅니다!"
+        ];
+
+        // 격려 메시지 배열 (오답 시 사용)
+        const negativeFeedback = [
+            "괜찮아요, 다음 문제에서 만회할 수 있어요!",
+            "조금 아쉽지만, 다시 도전해 봐요!",
+            "아하! 다음엔 꼭 맞출 수 있을 거예요!",
+            "실패는 성공의 어머니! 힘내세요!",
+            "이런! 하지만 괜찮아요, 계속 배우는 중이니까요!"
+        ];
+
         // DOM 요소 가져오기
-        const diaryDateInput = document.getElementById('diaryDate');
-        const diaryContentTextarea = document.getElementById('diaryContent');
-        const saveButton = document.getElementById('saveButton');
-        const editButton = document.getElementById('editButton');
-        const deleteButton = document.getElementById('deleteButton');
-        const photoUploadInput = document.getElementById('photoUpload');
-        const imagePreviewsContainer = document.getElementById('imagePreviewsContainer'); // 여러 이미지 미리보기 컨테이너
-        const emotionOptions = document.querySelectorAll('.emotion-tags .option');
-        const selectedEmotionInput = document.getElementById('selectedEmotion');
-        const selectedTagsInput = document.getElementById('selectedTags');
-        const diaryListUl = document.getElementById('diaryList');
-        const searchQueryInput = document.getElementById('searchQuery');
-        const searchButton = document.getElementById('searchButton');
-        const searchResultsDiv = document.getElementById('searchResults');
+        const startScreen = document.getElementById('start-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const resultScreen = document.getElementById('result-screen');
 
-        // 백업 관련 DOM 요소
-        const backupStartDateInput = document.getElementById('backupStartDate');
-        const backupEndDateInput = document.getElementById('backupEndDate');
-        const backupButton = document.getElementById('backupButton');
+        const csvTextInput = document.getElementById('csv-text-input'); // 텍스트 입력 필드
+        const loadTextCsvBtn = document.getElementById('load-text-csv-btn'); // 텍스트 불러오기 버튼
+        const csvUrlInput = document.getElementById('csv-url-input'); // URL 입력 필드
+        const loadUrlCsvBtn = document.getElementById('load-url-csv-btn'); // URL 불러오기 버튼
+        const loadingIndicator = document.getElementById('loading-indicator'); // 로딩 인디케이터
 
-        // 이미지 모달 관련 DOM 요소
-        const imageModal = document.getElementById('imageModal');
-        const modalImage = document.getElementById('modalImage');
-        const imageModalClose = document.getElementsByClassName('image-modal-close')[0];
+        const categorySelect = document.getElementById('category-select');
+        const startGameBtn = document.getElementById('start-game-btn');
 
+        const progressDisplay = document.getElementById('progress-display');
+        const questionCategory = document.getElementById('question-category');
+        const questionText = document.getElementById('question-text');
+        const answerOptionsContainer = document.getElementById('answer-options-container'); // 4지선다 컨테이너
+        const feedbackMessage = document.getElementById('feedback-message');
+        const explanationText = document.getElementById('explanation-text');
+        const nextQuestionBtn = document.getElementById('next-question-btn');
 
-        // 초기화: 오늘 날짜 설정 및 해당 날짜 일기 불러오기
-        window.onload = () => {
-            const today = new Date();
-            const year = today.getFullYear();
-            const month = String(today.getMonth() + 1).padStart(2, '0');
-            const day = String(today.getDate()).padStart(2, '0');
-            const todayString = `${year}-${month}-${day}`;
-            diaryDateInput.value = todayString;
-            backupStartDateInput.value = todayString; // 백업 시작 날짜도 오늘로 초기화
-            backupEndDateInput.value = todayString;   // 백업 종료 날짜도 오늘로 초기화
-            loadDiary(todayString);
-            renderDiaryList();
-        };
+        const scoreDisplay = document.getElementById('score-display');
+        const highScoreDisplay = document.getElementById('high-score-display');
+        const restartGameBtn = document.getElementById('restart-game-btn');
 
-        // 날짜 변경 시 해당 날짜의 일기 불러오기
-        diaryDateInput.addEventListener('change', (event) => {
-            const selectedDate = event.target.value;
-            loadDiary(selectedDate);
-        });
+        const animationContainer = document.getElementById('animation-container');
 
-        // 감정/태그 선택 핸들러
-        emotionOptions.forEach(option => {
-            option.addEventListener('click', () => {
-                const value = option.dataset.value;
-                // 감정은 단일 선택, 태그는 다중 선택
-                const isEmotion = ['happy', 'sad', 'angry', 'excited', 'tired', 'love'].includes(value);
+        /**
+         * 게임을 초기화하고 시작 화면을 표시합니다.
+         * 로컬 스토리지에서 최고 점수를 불러옵니다.
+         */
+        function initializeGame() {
+            // 모든 화면을 숨기고 시작 화면만 표시
+            startScreen.classList.remove('hidden');
+            quizScreen.classList.add('hidden');
+            resultScreen.classList.add('hidden');
 
-                if (isEmotion) {
-                    // 감정은 단일 선택
-                    emotionOptions.forEach(opt => {
-                        const optValue = opt.dataset.value;
-                        const optIsEmotion = ['happy', 'sad', 'angry', 'excited', 'tired', 'love'].includes(optValue);
-                        if (optIsEmotion) {
-                            opt.classList.remove('selected');
-                        }
+            // 로컬 스토리지에서 최고 점수 불러오기
+            const storedHighScore = localStorage.getItem('familyQuizHighScore');
+            if (storedHighScore) {
+                highScore = parseInt(storedHighScore, 10);
+            }
+            highScoreDisplay.textContent = `최고 점수: ${highScore}개`;
+
+            // quizData가 비어있을 때만 CSV 입력 영역에 예시 데이터 미리 채워넣기
+            if (quizData.length === 0) {
+                csvTextInput.value = `가족상식,아빠의 별명은 무엇일까요?,슈퍼맨,배트맨,스파이더맨,아이언맨,아빠는 정말 멋진 영웅이셔!
+동물퀴즈,코끼리의 코는 몇 개일까요?,1개,2개,3개,4개,코끼리 코는 길고 힘센 하나의 기관이에요.
+만화캐릭터,뽀로로 친구 중 안경을 쓴 친구는?,루피,크롱,에디,패티,루피는 통통한 몸에 안경을 썼답니다.
+역사퀴즈,세종대왕이 만든 글자는?,한글,훈민정음,한자,로마자,한글은 우리 민족의 자랑스러운 글자예요!
+상식퀴즈,지구는 태양 주위를 도는 행성입니다. 맞을까요?,O,X,세모,네모,지구는 태양계의 세 번째 행성이에요.
+음식퀴즈,김치찌개의 주재료는 무엇일까요?,김치,두부,돼지고기,파,김치는 한국의 대표적인 발효 음식이에요.
+스포츠퀴즈,축구에서 한 팀의 선수는 몇 명일까요?,11명,9명,10명,12명,골키퍼를 포함해서 11명이 한 팀을 이뤄요.
+과학퀴즈,물은 몇 도에서 얼까요?,0도,100도,-10도,5도,물의 어는점은 0도씨입니다.
+지리퀴즈,대한민국의 수도는 어디일까요?,서울,부산,제주,도쿄,서울은 대한민국의 가장 큰 도시예요.
+동화퀴즈,백설공주에 나오는 난쟁이는 모두 몇 명일까요?,7명,5명,6명,8명,일곱 난쟁이와 함께 살았어요.
+가족상식,엄마가 가장 좋아하는 꽃은 무엇일까요?,장미,튤립,해바라기,백합,장미는 아름다운 꽃의 여왕이에요.
+동물퀴즈,하늘을 날 수 없는 새는 무엇일까요?,펭귄,참새,독수리,비둘기,펭귄은 날지 못하지만 수영을 아주 잘해요.
+만화캐릭터,겨울왕국에서 엘사의 동생 이름은?,안나,올라프,크리스토프,한스,안나는 엘사의 사랑스러운 여동생이에요.
+역사퀴즈,이순신 장군이 활약했던 전쟁은?,임진왜란,병자호란,한국전쟁,을미사변,임진왜란은 조선 시대에 일어난 큰 전쟁이에요.
+상식퀴즈,사과가 나무에서 떨어지는 현상을 설명하는 법칙은?,만유인력의 법칙,작용 반작용의 법칙,관성의 법칙,질량 보존의 법칙,뉴턴이 발견한 중요한 법칙이에요.
+음식퀴즈,짜장면은 어느 나라 음식일까요?,중국,한국,일본,미국,중국에서 유래한 면 요리입니다.
+스포츠퀴즈,농구에서 골을 넣으면 몇 점일까요?,2점,1점,3점,4점,자유투는 1점, 3점 라인 밖은 3점이에요.
+과학퀴즈,사람의 몸에서 가장 큰 장기는?,피부,간,뇌,심장,피부는 우리 몸을 보호하는 가장 큰 기관이에요.
+지리퀴즈,세계에서 가장 높은 산은?,에베레스트,백두산,한라산,후지산,에베레스트는 히말라야 산맥에 있어요.
+동화퀴즈,신데렐라가 무도회에 갈 때 타고 간 것은?,호박마차,자동차,비행기,기차,마법으로 변한 호박마차를 타고 갔어요.`;
+            }
+            // 현재 quizData를 기반으로 드롭다운 업데이트 (초기 로드 또는 게임 재시작 시)
+            updateCategoryDropdown();
+        }
+
+        /**
+         * CSV 문자열을 파싱하여 퀴즈 데이터 배열로 변환하는 헬퍼 함수입니다.
+         * CSV 형식: [문제 종목], [문제], [정답], [오답1], [오답2], [오답3], [오답 시 간략 설명]
+         * @param {string} csvString - CSV 형식의 문자열.
+         * @returns {Array<Object>} 파싱된 퀴즈 데이터 배열.
+         */
+        function parseCsvString(csvString) {
+            const lines = csvString.trim().split('\n');
+            const parsedData = [];
+            for (const line of lines) {
+                // 각 줄을 쉼표로 분리
+                const parts = line.split(',');
+                // 정확히 7개의 요소가 있는지 확인
+                if (parts.length === 7) {
+                    parsedData.push({
+                        category: parts[0].trim(), // 문제 종목
+                        question: parts[1].trim(), // 문제
+                        correctAnswer: parts[2].trim(), // 정답
+                        incorrect1: parts[3].trim(), // 오답1
+                        incorrect2: parts[4].trim(), // 오답2
+                        incorrect3: parts[5].trim(), // 오답3
+                        explanation: parts[6].trim() // 오답 시 간략 설명
                     });
-                    option.classList.add('selected');
-                    selectedEmotionInput.value = value;
                 } else {
-                    // 태그는 다중 선택 가능
-                    option.classList.toggle('selected');
-                    const selectedTags = Array.from(document.querySelectorAll('.emotion-tags .option.selected'))
-                                            .filter(opt => !['happy', 'sad', 'angry', 'excited', 'tired', 'love'].includes(opt.dataset.value))
-                                            .map(opt => opt.dataset.value);
-                    selectedTagsInput.value = JSON.stringify(selectedTags);
+                    console.warn('잘못된 CSV 데이터 형식 (7개 열이 필요합니다):', line);
                 }
-            });
-        });
-
-        // 사진 첨부 미리보기 기능 (여러 장)
-        photoUploadInput.addEventListener('change', (event) => {
-            // 기존 미리보기는 유지하고 새 파일만 추가
-            const files = event.target.files;
-            if (files.length > 0) {
-                Array.from(files).forEach(file => {
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        createImagePreview(e.target.result);
-                    };
-                    reader.readAsDataURL(file);
-                });
             }
-            photoUploadInput.value = ''; // 같은 파일 다시 선택할 수 있도록 입력 초기화
-        });
-
-        // 이미지 미리보기 생성 및 삭제/모달 기능 추가 함수
-        function createImagePreview(imgSrc) {
-            const imagePreviewItem = document.createElement('div');
-            imagePreviewItem.classList.add('image-preview-item');
-
-            const img = document.createElement('img');
-            img.src = imgSrc;
-            img.alt = '선택된 이미지 미리보기';
-            imagePreviewItem.appendChild(img);
-
-            const deleteButton = document.createElement('span');
-            deleteButton.classList.add('image-delete-button');
-            deleteButton.textContent = 'x';
-            deleteButton.title = '사진 삭제';
-            deleteButton.addEventListener('click', (e) => {
-                e.stopPropagation(); // 이미지 클릭 이벤트 방지
-                imagePreviewItem.remove(); // 미리보기 아이템 삭제
-            });
-            imagePreviewItem.appendChild(deleteButton);
-
-            // 이미지 클릭 시 모달 열기 이벤트 리스너 추가
-            img.addEventListener('click', () => {
-                modalImage.src = img.src;
-                imageModal.style.display = 'flex'; // flex로 설정하여 중앙 정렬
-            });
-
-            imagePreviewsContainer.appendChild(imagePreviewItem);
+            return parsedData;
         }
 
-
-        // 이미지 모달 닫기 이벤트
-        imageModalClose.addEventListener('click', () => {
-            imageModal.style.display = 'none';
-        });
-
-        // 모달 외부 클릭 시 닫기 (옵션)
-        imageModal.addEventListener('click', (event) => {
-            if (event.target === imageModal) {
-                imageModal.style.display = 'none';
-            }
-        });
-
-
-        // 저장 버튼 클릭 이벤트
-        saveButton.addEventListener('click', () => {
-            const date = diaryDateInput.value;
-            const content = diaryContentTextarea.value;
-            const emotion = selectedEmotionInput.value;
-            const tags = JSON.parse(selectedTagsInput.value || '[]');
-            
-            // 현재 표시된 여러 이미지 데이터 수집
-            const imageDataArray = [];
-            Array.from(imagePreviewsContainer.querySelectorAll('.image-preview-item img')).forEach(img => {
-                if (img.src && img.src !== '#') {
-                    imageDataArray.push(img.src);
-                }
-            });
-
-            if (!date || !content) {
-                alertMessage('날짜와 내용을 입력해주세요!', 'warning');
-                return;
-            }
-
-            const diaryEntry = {
-                content: content,
-                emotion: emotion,
-                tags: tags,
-                imageData: imageDataArray, // 이미지 데이터를 배열로 저장
-                timestamp: new Date().toISOString() // 저장 시 타임스탬프
-            };
-
-            // 로컬 저장 로직
-            saveDiaryLocally(date, diaryEntry);
-            alertMessage('일기가 성공적으로 저장되었습니다!', 'success');
-            renderDiaryList(); // 목록 업데이트
-            clearDiaryForm(); // 저장 후 폼 초기화
-            // 서버 저장 (개념적)
-            // saveDiaryToServer(date, diaryEntry);
-        });
-
-        // 수정 버튼 클릭 이벤트 (현재 날짜의 일기 불러오기)
-        editButton.addEventListener('click', () => {
-            const date = diaryDateInput.value;
-            loadDiary(date);
-            alertMessage('현재 날짜의 일기를 불러왔습니다. 수정 후 다시 저장해주세요.', 'info');
-        });
-
-        // 삭제 버튼 클릭 이벤트
-        deleteButton.addEventListener('click', async () => { // async 추가
-            const date = diaryDateInput.value;
-            const confirmed = await confirmMessage('정말로 이 날짜의 일기를 삭제하시겠습니까?'); // await 추가
-            if (confirmed) {
-                // 로컬 삭제 로직
-                deleteDiaryLocally(date);
-                alertMessage('일기가 성공적으로 삭제되었습니다!', 'success');
-                clearDiaryForm();
-                renderDiaryList(); // 목록 업데이트
-                // 서버 삭제 (개념적)
-                // deleteDiaryFromServer(date);
-            }
-        });
-
-        // 검색 버튼 클릭 이벤트
-        searchButton.addEventListener('click', () => {
-            const query = searchQueryInput.value.toLowerCase();
-            searchDiaries(query);
-        });
-
-        // 백업 버튼 클릭 이벤트
-        backupButton.addEventListener('click', async () => {
-            const startDateStr = backupStartDateInput.value;
-            const endDateStr = backupEndDateInput.value;
-
-            if (!startDateStr || !endDateStr) {
-                alertMessage('백업 기간을 선택해주세요!', 'warning');
-                return;
-            }
-
-            const startDate = new Date(startDateStr);
-            const endDate = new Date(endDateStr);
-
-            // 종료 날짜의 시간을 23:59:59로 설정하여 해당 날짜의 모든 일기를 포함하도록 함
-            endDate.setHours(23, 59, 59, 999); 
-
-            if (startDate > endDate) {
-                alertMessage('시작 날짜는 종료 날짜보다 빠르거나 같아야 합니다!', 'warning');
-                return;
-            }
-
-            let backupContent = `=== 일기 백업 (${startDateStr} ~ ${endDateStr}) ===\n\n`;
-            let hasEntries = false;
-
-            // localStorage의 모든 키를 순회하며 일기 데이터 추출
-            const diaryKeys = [];
-            for (let i = 0; i < localStorage.length; i++) {
-                const key = localStorage.key(i);
-                if (key.startsWith('diary_')) {
-                    diaryKeys.push(key);
-                }
-            }
-
-            // 날짜 순으로 정렬
-            diaryKeys.sort((a, b) => {
-                const dateA = new Date(a.replace('diary_', ''));
-                const dateB = new Date(b.replace('diary_', ''));
-                return dateA - dateB;
-            });
-
-            diaryKeys.forEach(key => {
-                const dateStr = key.replace('diary_', '');
-                const entryDate = new Date(dateStr);
-
-                // 선택된 기간 내의 일기만 포함
-                if (entryDate >= startDate && entryDate <= endDate) {
-                    const entry = loadDiaryLocally(dateStr);
-                    if (entry) {
-                        hasEntries = true;
-                        backupContent += `--- 날짜: ${dateStr} ---\n`;
-                        backupContent += `기분: ${entry.emotion || '없음'}\n`;
-                        backupContent += `태그: ${entry.tags && entry.tags.length > 0 ? entry.tags.join(', ') : '없음'}\n`;
-                        backupContent += `내용:\n${entry.content}\n`;
-                        if (entry.imageData && entry.imageData.length > 0) {
-                            backupContent += `(사진 ${entry.imageData.length}장 첨부됨 - 텍스트 파일에는 이미지 포함 안됨)\n`;
-                        }
-                        backupContent += `저장 시각: ${new Date(entry.timestamp).toLocaleString()}\n\n`;
-                    }
-                }
-            });
-
-            if (!hasEntries) {
-                alertMessage('선택된 기간에 작성된 일기가 없습니다.', 'info');
-                return;
-            }
-
-            // 텍스트 파일로 저장
-            const blob = new Blob([backupContent], { type: 'text/plain;charset=utf-8' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `diary_backup_${startDateStr}_${endDateStr}.txt`;
-            document.body.appendChild(a);
-            a.click(); // 다운로드 트리거
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url); // URL 해제
-
-            alertMessage('일기 백업이 완료되었습니다!', 'success');
-        });
-
-
-        /* --- 일기 저장/불러오기/삭제 로직 (로컬 저장소) --- */
-
-        // 로컬 저장: 브라우저의 localStorage를 활용
-        function saveDiaryLocally(date, entry) {
-            localStorage.setItem(`diary_${date}`, JSON.stringify(entry));
-        }
-
-        // 로컬 불러오기: localStorage에서 일기 내용 불러오기
-        function loadDiaryLocally(date) {
-            const storedEntry = localStorage.getItem(`diary_${date}`);
-            return storedEntry ? JSON.parse(storedEntry) : null;
-        }
-
-        // 로컬 삭제: localStorage에서 일기 내용 삭제
-        function deleteDiaryLocally(date) {
-            localStorage.removeItem(`diary_${date}`);
-        }
-
-        // 특정 날짜의 일기 불러와 UI에 표시
-        function loadDiary(date) {
-            const entry = loadDiaryLocally(date);
-            if (entry) {
-                diaryContentTextarea.value = entry.content;
-                // 감정 및 태그 UI 업데이트
-                emotionOptions.forEach(option => option.classList.remove('selected'));
-                if (entry.emotion) {
-                    const emotionOpt = document.querySelector(`.emotion-tags .option[data-value="${entry.emotion}"]`);
-                    if (emotionOpt) emotionOpt.classList.add('selected');
-                    selectedEmotionInput.value = entry.emotion;
-                } else {
-                    selectedEmotionInput.value = '';
-                }
-                if (entry.tags && Array.isArray(entry.tags)) {
-                    entry.tags.forEach(tag => {
-                        const tagOpt = document.querySelector(`.emotion-tags .option[data-value="${tag}"]`);
-                        if (tagOpt) tagOpt.classList.add('selected');
-                    });
-                    selectedTagsInput.value = JSON.stringify(entry.tags);
-                } else {
-                    selectedTagsInput.value = '[]';
-                }
-
-                // 여러 이미지 미리보기 업데이트
-                imagePreviewsContainer.innerHTML = ''; // 기존 미리보기 초기화
-                if (entry.imageData && Array.isArray(entry.imageData) && entry.imageData.length > 0) {
-                    entry.imageData.forEach(imgSrc => {
-                        createImagePreview(imgSrc); // 이미지 미리보기 생성 함수 호출
-                    });
-                }
+        /**
+         * CSV 텍스트 입력 필드에서 데이터를 파싱하여 퀴즈 데이터를 로드합니다.
+         */
+        function loadCsvFromText() {
+            const csvString = csvTextInput.value;
+            const newQuizData = parseCsvString(csvString);
+            if (newQuizData.length > 0) {
+                quizData = newQuizData;
+                updateCategoryDropdown();
+                alertMessage("텍스트 데이터가 성공적으로 불러와졌습니다!");
             } else {
-                clearDiaryForm();
+                alertMessage("텍스트 데이터가 없거나 형식이 올바르지 않습니다.");
             }
         }
 
-        // 일기 작성 폼 초기화
-        function clearDiaryForm() {
-            diaryContentTextarea.value = '';
-            emotionOptions.forEach(option => option.classList.remove('selected'));
-            selectedEmotionInput.value = '';
-            selectedTagsInput.value = '[]';
-            imagePreviewsContainer.innerHTML = ''; // 여러 이미지 미리보기 컨테이너 초기화
-            photoUploadInput.value = ''; // 파일 입력 초기화
-            // 날짜는 오늘 날짜로 유지 (사용자가 다른 날짜를 선택하지 않는 한)
-            // const today = new Date();
-            // const year = today.getFullYear();
-            // const month = String(today.getMonth() + 1).padStart(2, '0');
-            // const day = String(today.getDate()).padStart(2, '0');
-            // const todayString = `${year}-${month}-${day}`;
-            // diaryDateInput.value = todayString;
-        }
-
-        // 일기 목록 렌더링
-        function renderDiaryList() {
-            diaryListUl.innerHTML = ''; // 기존 목록 초기화
-            const diaryDates = [];
-            for (let i = 0; i < localStorage.length; i++) {
-                const key = localStorage.key(i);
-                if (key.startsWith('diary_')) {
-                    diaryDates.push(key.replace('diary_', ''));
-                }
-            }
-            diaryDates.sort((a, b) => new Date(b) - new Date(a)); // 최신 날짜부터 정렬
-
-            if (diaryDates.length === 0) {
-                const li = document.createElement('li');
-                li.textContent = '아직 작성된 일기가 없어요.';
-                diaryListUl.appendChild(li);
+        /**
+         * Google 스프레드시트 공개 CSV URL에서 데이터를 비동기적으로 로드합니다.
+         */
+        async function loadCsvFromUrl() {
+            const url = csvUrlInput.value.trim();
+            if (!url) {
+                alertMessage("CSV URL을 입력해주세요!");
                 return;
             }
 
-            diaryDates.forEach(date => {
-                const li = document.createElement('li');
-                li.innerHTML = `<span>${date}</span>
-                                <button data-date="${date}">열기</button>`;
-                li.querySelector('button').addEventListener('click', (event) => {
-                    const targetDate = event.target.dataset.date;
-                    diaryDateInput.value = targetDate; // 날짜 입력란 업데이트
-                    loadDiary(targetDate);
-                });
-                diaryListUl.appendChild(li);
+            loadingIndicator.style.display = 'block'; // 로딩 인디케이터 표시
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`HTTP 오류! 상태: ${response.status}`);
+                }
+                const csvString = await response.text();
+                const newQuizData = parseCsvString(csvString);
+
+                if (newQuizData.length > 0) {
+                    quizData = newQuizData;
+                    updateCategoryDropdown();
+                    alertMessage("URL에서 데이터가 성공적으로 불러와졌습니다!");
+                } else {
+                    alertMessage("URL에서 유효한 퀴즈 데이터를 찾을 수 없습니다. 형식을 확인해주세요.");
+                }
+            } catch (error) {
+                console.error('URL에서 CSV 불러오기 오류:', error);
+                alertMessage(`데이터를 불러오는 중 오류가 발생했습니다: ${error.message}. URL이 올바른지, 웹에 게시되었는지 확인해주세요 (CORS 문제일 수 있습니다).`);
+            } finally {
+                loadingIndicator.style.display = 'none'; // 로딩 인디케이터 숨김
+            }
+        }
+
+        /**
+         * 파싱된 퀴즈 데이터에서 고유한 종목들을 추출하여 드롭다운 메뉴를 업데이트합니다.
+         */
+        function updateCategoryDropdown() {
+            // 기존 옵션 제거 (첫 번째 "-- 종목 선택 --" 옵션 제외)
+            while (categorySelect.options.length > 1) {
+                categorySelect.remove(1);
+            }
+
+            const categories = new Set(); // 중복을 제거하기 위한 Set
+            quizData.forEach(item => {
+                categories.add(item.category);
+            });
+
+            // Set에 있는 각 종목을 드롭다운 옵션으로 추가
+            categories.forEach(category => {
+                const option = document.createElement('option');
+                option.value = category;
+                option.textContent = category;
+                categorySelect.appendChild(option);
             });
         }
 
-        // 텍스트 기반 검색 기능
-        function searchDiaries(query) {
-            searchResultsDiv.innerHTML = ''; // 기존 검색 결과 초기화
-            if (!query) {
-                searchResultsDiv.textContent = '검색어를 입력해주세요.';
+        /**
+         * 선택된 종목에 따라 퀴즈를 시작합니다.
+         * 10개의 문제를 랜덤으로 선택하고 게임 상태를 초기화합니다.
+         */
+        function startGame() {
+            selectedCategory = categorySelect.value;
+            if (!selectedCategory) {
+                alertMessage("퀴즈 종목을 선택해주세요!");
                 return;
             }
 
-            let foundResults = false;
-            for (let i = 0; i < localStorage.length; i++) {
-                const key = localStorage.key(i);
-                if (key.startsWith('diary_')) {
-                    const date = key.replace('diary_', '');
-                    const entry = loadDiaryLocally(date);
-                    if (entry && entry.content.toLowerCase().includes(query)) {
-                        const resultDiv = document.createElement('div');
-                        resultDiv.innerHTML = `<strong>${date}</strong>: ${entry.content.substring(0, Math.min(entry.content.length, 100))}...`; // 100자까지 표시
-                        resultDiv.addEventListener('click', () => {
-                            diaryDateInput.value = date;
-                            loadDiary(date);
-                            searchResultsDiv.innerHTML = ''; // 검색 결과 닫기
-                            searchQueryInput.value = '';
-                        });
-                        searchResultsDiv.appendChild(resultDiv);
-                        foundResults = true;
+            // 선택된 종목의 문제만 필터링
+            const filteredQuestions = quizData.filter(q => q.category === selectedCategory);
+            if (filteredQuestions.length < 10) {
+                alertMessage(`선택된 종목 (${selectedCategory})에 10문제 미만입니다. 최소 10문제가 필요합니다.`);
+                return;
+            }
+
+            // 필터링된 문제들을 섞고 10개만 선택 (중복 방지)
+            const shuffled = [...filteredQuestions].sort(() => 0.5 - Math.random());
+            currentQuiz = shuffled.slice(0, 10);
+
+            // 게임 상태 초기화
+            currentQuestionIndex = 0;
+            score = 0;
+            isAnswerChecked = false; // 정답 확인 상태 초기화
+
+            // 화면 전환
+            startScreen.classList.add('hidden');
+            quizScreen.classList.remove('hidden');
+
+            displayQuestion(); // 첫 번째 문제 표시
+        }
+
+        /**
+         * 현재 문제를 화면에 표시합니다.
+         */
+        function displayQuestion() {
+            // 이전 피드백 및 설명 숨기기
+            feedbackMessage.textContent = '';
+            feedbackMessage.className = ''; // 클래스 제거
+            explanationText.textContent = ''; // 설명 텍스트 초기화
+            nextQuestionBtn.classList.add('hidden'); // 다음 문제 버튼 숨기기
+            isAnswerChecked = false; // 정답 확인 상태 초기화
+
+            // 4지선다 선택지 컨테이너 초기화
+            answerOptionsContainer.innerHTML = '';
+
+            // 현재 문제 정보 가져오기
+            const question = currentQuiz[currentQuestionIndex];
+            if (question) {
+                progressDisplay.textContent = `${currentQuestionIndex + 1}/10 문제`;
+                questionCategory.textContent = `[${question.category}]`;
+                questionText.textContent = question.question;
+
+                // 정답과 오답들을 배열로 합치고 섞기
+                const answers = [
+                    question.correctAnswer,
+                    question.incorrect1,
+                    question.incorrect2,
+                    question.incorrect3
+                ];
+                // 배열 섞기 (Fisher-Yates shuffle 알고리즘)
+                for (let i = answers.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [answers[i], answers[j]] = [answers[j], answers[i]]; // 배열 요소 교환
+                }
+
+                // 섞인 답변들을 버튼으로 생성
+                answers.forEach(answer => {
+                    const button = document.createElement('button');
+                    button.classList.add('answer-option-button');
+                    button.textContent = answer;
+                    button.addEventListener('click', () => checkAnswer(button, question.correctAnswer));
+                    answerOptionsContainer.appendChild(button);
+                });
+
+            } else {
+                // 문제가 없으면 결과 화면으로 이동 (예외 처리)
+                showResultScreen();
+            }
+        }
+
+        /**
+         * 사용자의 정답을 확인하고 피드백을 제공합니다.
+         * @param {HTMLButtonElement} clickedButton - 사용자가 클릭한 답변 버튼 요소.
+         * @param {string} correctAnswerText - 현재 문제의 실제 정답 텍스트.
+         */
+        function checkAnswer(clickedButton, correctAnswerText) {
+            if (isAnswerChecked) return; // 이미 정답을 확인했으면 다시 처리하지 않음
+            isAnswerChecked = true; // 정답 확인 상태로 변경
+
+            const userAnswer = clickedButton.textContent.trim(); // 클릭된 버튼의 텍스트
+            const allAnswerButtons = answerOptionsContainer.querySelectorAll('.answer-option-button');
+
+            // 모든 답변 버튼 비활성화
+            allAnswerButtons.forEach(button => {
+                button.classList.add('disabled');
+            });
+
+            if (userAnswer === correctAnswerText) {
+                // 정답일 경우
+                score++; // 점수 증가
+                feedbackMessage.textContent = positiveFeedback[Math.floor(Math.random() * positiveFeedback.length)];
+                feedbackMessage.classList.add('correct-feedback');
+                clickedButton.classList.add('correct'); // 정답 버튼 색상 변경
+                triggerConfettiAnimation(); // 폭죽 애니메이션
+
+                // 긍정적인 피드백 후 잠시 대기 후 다음 문제로 이동
+                setTimeout(() => {
+                    nextQuestion();
+                }, 1500); // 1.5초 후 다음 문제로
+            } else {
+                // 오답일 경우
+                feedbackMessage.textContent = negativeFeedback[Math.floor(Math.random() * negativeFeedback.length)];
+                feedbackMessage.classList.add('incorrect-feedback');
+                clickedButton.classList.add('incorrect'); // 오답 버튼 색상 변경
+
+                // 정답 버튼을 찾아서 표시
+                allAnswerButtons.forEach(button => {
+                    if (button.textContent.trim() === correctAnswerText) {
+                        button.classList.add('correct');
                     }
-                }
-            }
-
-            if (!foundResults) {
-                searchResultsDiv.textContent = '검색 결과가 없습니다.';
-            }
-        }
-
-        /* --- 서버 저장 (개념적) 로직 스켈레톤 --- */
-        // 실제 서버 구현은 제외하고, fetch API를 사용한 비동기 통신 예시만 주석으로 명시합니다.
-
-        /**
-         * @param {string} date - 일기 날짜 (YYYY-MM-DD)
-         * @param {object} entry - 일기 내용 객체
-         */
-        async function saveDiaryToServer(date, entry) {
-            console.log('서버에 일기 저장 시도:', date, entry);
-            try {
-                // 실제 서버 엔드포인트와 데이터 형식에 맞게 수정해야 합니다.
-                const response = await fetch('/api/diary/save', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ date: date, data: entry }),
                 });
-                if (response.ok) {
-                    console.log('서버에 일기 저장 성공!');
-                    // alertMessage('서버에 일기 저장 성공!', 'success');
-                } else {
-                    console.error('서버에 일기 저장 실패:', response.statusText);
-                    // alertMessage('서버에 일기 저장 실패!', 'error');
-                }
-            } catch (error) {
-                console.error('서버 통신 오류:', error);
-                // alertMessage('서버 통신 오류 발생!', 'error');
+
+                explanationText.textContent = `정답은 "${currentQuiz[currentQuestionIndex].correctAnswer}" 이었어요. (${currentQuiz[currentQuestionIndex].explanation})`;
+                nextQuestionBtn.classList.remove('hidden'); // 다음 문제 버튼 표시
             }
         }
 
         /**
-         * @param {string} date - 일기 날짜 (YYYY-MM-DD)
-         * @returns {Promise<object|null>} - 일기 내용 객체 또는 null
+         * 다음 문제로 이동하거나, 모든 문제가 끝났으면 결과 화면을 표시합니다.
          */
-        async function loadDiaryFromServer(date) {
-            console.log('서버에서 일기 불러오기 시도:', date);
-            try {
-                const response = await fetch(`/api/diary/load?date=${date}`);
-                if (response.ok) {
-                    const data = await response.json();
-                    console.log('서버에서 일기 불러오기 성공:', data);
-                    return data; // 불러온 일기 데이터 반환
-                } else {
-                    console.error('서버에서 일기 불러오기 실패:', response.statusText);
-                    return null;
-                }
-            } catch (error) {
-                console.error('서버 통신 오류:', error);
-                return null;
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < currentQuiz.length) {
+                displayQuestion(); // 다음 문제 표시
+            } else {
+                showResultScreen(); // 모든 문제 완료, 결과 화면 표시
             }
         }
 
         /**
-         * @param {string} date - 일기 날짜 (YYYY-MM-DD)
+         * 게임 결과 화면을 표시하고 최고 점수를 업데이트합니다.
          */
-        async function deleteDiaryFromServer(date) {
-            console.log('서버에서 일기 삭제 시도:', date);
-            try {
-                const response = await fetch(`/api/diary/delete?date=${date}`, {
-                    method: 'DELETE',
-                });
-                if (response.ok) {
-                    console.log('서버에서 일기 삭제 성공!');
-                    // alertMessage('서버에서 일기 삭제 성공!', 'success');
-                } else {
-                    console.error('서버에서 일기 삭제 실패:', response.statusText);
-                    // alertMessage('서버에서 일기 삭제 실패!', 'error');
-                }
-            } catch (error) {
-                console.error('서버 통신 오류:', error);
-                // alertMessage('서버 통신 오류 발생!', 'error');
+        function showResultScreen() {
+            quizScreen.classList.add('hidden');
+            resultScreen.classList.remove('hidden');
+
+            scoreDisplay.textContent = `총 ${score}개 맞혔어요!`;
+
+            // 최고 점수 업데이트 및 로컬 스토리지 저장
+            if (score > highScore) {
+                highScore = score;
+                localStorage.setItem('familyQuizHighScore', highScore);
+                highScoreDisplay.textContent = `최고 점수: ${highScore}개 (새로운 기록!)`;
+            } else {
+                highScoreDisplay.textContent = `최고 점수: ${highScore}개`;
             }
         }
 
-        /* --- 커스텀 경고/확인 메시지 (alert/confirm 대체) --- */
-        // alert()와 confirm() 대신 사용할 커스텀 메시지 박스
-        function alertMessage(message, type = 'info') {
-            const existingAlert = document.getElementById('customAlert');
-            if (existingAlert) existingAlert.remove();
-
-            const alertBox = document.createElement('div');
-            alertBox.id = 'customAlert';
-            alertBox.style.cssText = `
+        /**
+         * 사용자에게 메시지를 표시하는 커스텀 알림 함수.
+         * (브라우저의 alert() 대신 사용)
+         */
+        function alertMessage(message) {
+            const messageBox = document.createElement('div');
+            messageBox.style.cssText = `
                 position: fixed;
-                top: 20px;
+                top: 50%;
                 left: 50%;
-                transform: translateX(-50%);
-                padding: 15px 25px;
-                border-radius: 10px;
+                transform: translate(-50%, -50%);
+                background-color: #FFEB3B; /* 노란색 배경 */
+                color: #333;
+                padding: 20px 30px;
+                border-radius: 15px;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+                font-size: 1.2em;
                 font-weight: bold;
                 z-index: 1000;
-                box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-                color: white;
-                opacity: 0;
-                transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+                animation: fadeInOut 2s forwards; /* 나타났다 사라지는 애니메이션 */
             `;
+            messageBox.textContent = message;
+            document.body.appendChild(messageBox);
 
-            if (type === 'success') {
-                alertBox.style.backgroundColor = '#a8d5ba'; /* 민트색 */
-            } else if (type === 'error') {
-                alertBox.style.backgroundColor = '#ff7f7f'; /* 빨강색 */
-            } else if (type === 'warning') {
-                alertBox.style.backgroundColor = '#ffbe76'; /* 주황색 */
-            } else {
-                alertBox.style.backgroundColor = '#76baff'; /* 파랑색 (info) */
+            // 애니메이션 키프레임 추가 (CSS에 이미 정의되어 있지 않다면)
+            if (!document.getElementById('fadeInOutKeyframes')) {
+                const style = document.createElement('style');
+                style.id = 'fadeInOutKeyframes';
+                style.innerHTML = `
+                    @keyframes fadeInOut {
+                        0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+                        20% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+                        80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+                        100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+                    }
+                `;
+                document.head.appendChild(style);
             }
 
-            alertBox.textContent = message;
-            document.body.appendChild(alertBox);
-
             setTimeout(() => {
-                alertBox.style.opacity = '1';
-                alertBox.style.transform = 'translateX(-50%) translateY(0)';
-            }, 50);
-
-            setTimeout(() => {
-                alertBox.style.opacity = '0';
-                alertBox.style.transform = 'translateX(-50%) translateY(-20px)';
-                alertBox.addEventListener('transitionend', () => alertBox.remove());
-            }, 3000);
+                messageBox.remove();
+            }, 2000); // 2초 후 메시지 박스 제거
         }
 
-        function confirmMessage(message) {
-            // Canvas 환경에서 confirm()이 작동하지 않으므로, 커스텀 모달로 대체합니다.
-            return new Promise((resolve) => {
-                const modal = document.createElement('div');
-                modal.style.cssText = `
-                    position: fixed;
-                    top: 0;
-                    left: 0;
-                    width: 100%;
-                    height: 100%;
-                    background: rgba(0,0,0,0.5);
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    z-index: 1001;
-                `;
-                modal.innerHTML = `
-                    <div style="background: white; padding: 30px; border-radius: 15px; text-align: center; box-shadow: 0 5px 20px rgba(0,0,0,0.3); color: #5a4a42;">
-                        <p style="margin-bottom: 20px; font-size: 1.1em; font-weight: 600;">${message}</p>
-                        <button id="confirmYes" style="margin-right: 10px; padding: 10px 20px; background-color: #a8d5ba; color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: 600;">예</button>
-                        <button id="confirmNo" style="padding: 10px 20px; background-color: #ff7f7f; color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: 600;">아니오</button>
-                    </div>
-                `;
-                document.body.appendChild(modal);
-                document.getElementById('confirmYes').onclick = () => { modal.remove(); resolve(true); };
-                document.getElementById('confirmNo').onclick = () => { modal.remove(); resolve(false); };
-            });
+        /**
+         * 정답 시 폭죽/반짝이 애니메이션을 생성합니다.
+         */
+        function triggerConfettiAnimation() {
+            const numParticles = 30;
+            const colors = ['#FFD700', '#FF6347', '#6A5ACD', '#00CED1', '#ADFF2F']; // 다양한 색상
+
+            for (let i = 0; i < numParticles; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                const size = Math.random() * 8 + 4; // 4px ~ 12px
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+
+                // 파티클 시작 위치 (정답 메시지 주변)
+                const rect = feedbackMessage.getBoundingClientRect();
+                particle.style.left = `${rect.left + rect.width / 2 + (Math.random() - 0.5) * 50}px`;
+                particle.style.top = `${rect.top + rect.height / 2 + (Math.random() - 0.5) * 50}px`;
+
+                // 애니메이션 설정
+                const duration = Math.random() * 0.8 + 0.7; // 0.7s ~ 1.5s
+                const delay = Math.random() * 0.2; // 0s ~ 0.2s
+                const translateX = (Math.random() - 0.5) * 200; // -100px ~ 100px
+                const translateY = (Math.random() - 0.5) * 200 - 50; // -150px ~ 50px (위로 더 많이)
+
+                particle.style.animation = `particle-fade-out ${duration}s forwards`;
+                particle.style.animationDelay = `${delay}s`;
+                particle.style.transform = `translate(${translateX}px, ${translateY}px)`; // 초기 이동
+
+                animationContainer.appendChild(particle);
+
+                // 애니메이션 종료 후 파티클 제거
+                particle.addEventListener('animationend', () => {
+                    particle.remove();
+                });
+            }
         }
 
+
+        // 이벤트 리스너 설정
+        document.addEventListener('DOMContentLoaded', initializeGame); // DOM 로드 완료 시 게임 초기화
+
+        loadTextCsvBtn.addEventListener('click', loadCsvFromText); // 텍스트 데이터 불러오기 버튼 클릭 시 CSV 파싱
+        loadUrlCsvBtn.addEventListener('click', loadCsvFromUrl); // URL 데이터 불러오기 버튼 클릭 시 URL에서 CSV 로드
+
+        startGameBtn.addEventListener('click', startGame); // 게임 시작 버튼 클릭 시 게임 시작
+
+        nextQuestionBtn.addEventListener('click', nextQuestion); // 다음 문제 버튼 클릭 시 다음 문제로 이동
+
+        restartGameBtn.addEventListener('click', initializeGame); // 다시 시작하기 버튼 클릭 시 게임 초기화
+
+        // 텍스트 입력 필드 대신 버튼 클릭으로 정답 확인
+        // answerInput.addEventListener('keypress', (event) => { ... }); // 이 부분은 이제 필요 없습니다.
     </script>
 </body>
 </html>
+
