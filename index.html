@@ -131,8 +131,8 @@
         /* 특정 버튼 색상 */
         #start-game-btn { background-color: #4CAF50; } /* 초록색 */
         #start-game-btn:hover { background-color: #388E3C; }
-        #load-text-csv-btn, #load-url-csv-btn { background-color: #607D8B; } /* 회색 톤 */
-        #load-text-csv-btn:hover, #load-url-csv-btn:hover { background-color: #455A64; }
+        #load-text-csv-btn { background-color: #607D8B; } /* 회색 톤 */
+        #load-text-csv-btn:hover { background-color: #455A64; }
 
         /* 4지선다 선택지 버튼 스타일 */
         .answer-options-container {
@@ -338,16 +338,12 @@
     <div id="app-container">
         <div id="start-screen" class="game-screen">
             <h1>✨ 우리 가족 퀴즈 게임 ✨</h1>
-            <p>CSV 형식의 퀴즈 데이터를 아래에 직접 붙여넣거나, Google 스프레드시트의 공개 CSV URL을 입력하세요.</p>
+            <p>CSV 형식의 퀴즈 데이터를 아래에 직접 붙여넣으세요.</p>
 
             <label for="csv-text-input" style="font-weight: bold; margin-bottom: 5px; display: block;">CSV 텍스트 직접 붙여넣기:</label>
             <textarea id="csv-text-input" placeholder="여기에 CSV 퀴즈 데이터를 붙여넣으세요. (예: 가족상식,아빠의 별명은?,슈퍼맨,배트맨,스파이더맨,아이언맨,아빠는 정말 멋진 영웅이셔!)"></textarea>
             <button id="load-text-csv-btn" class="cute-button">텍스트 데이터 불러오기</button>
 
-            <p style="margin-top: 20px; margin-bottom: 10px; font-weight: bold;">또는 Google 스프레드시트 URL로 불러오기:</p>
-            <p style="font-size: 0.9em; color: #666;">(스프레드시트에서 '파일 > 공유 > 웹에 게시 > 쉼표로 구분된 값(.csv)'으로 게시한 후 URL을 붙여넣으세요.)</p>
-            <input type="text" id="csv-url-input" placeholder="Google 스프레드시트 공개 CSV URL">
-            <button id="load-url-csv-btn" class="cute-button">URL 데이터 불러오기</button>
             <div id="loading-indicator" style="display: none; margin-top: 10px; font-weight: bold; color: #2196F3;">데이터를 불러오는 중...</div>
 
             <p style="margin-top: 20px;">퀴즈 종목을 선택하고 게임을 시작하세요:</p>
@@ -363,7 +359,7 @@
             <p id="question-text"></p>
             <div id="explanation-text"></div>
             <div id="answer-options-container" class="answer-options-container">
-                </div>
+            </div>
             <div id="feedback-message"></div>
             <button id="next-question-btn" class="cute-button hidden">다음 문제</button>
         </div>
@@ -418,8 +414,6 @@
 
         const csvTextInput = document.getElementById('csv-text-input'); // 텍스트 입력 필드
         const loadTextCsvBtn = document.getElementById('load-text-csv-btn'); // 텍스트 불러오기 버튼
-        const csvUrlInput = document.getElementById('csv-url-input'); // URL 입력 필드
-        const loadUrlCsvBtn = document.getElementById('load-url-csv-btn'); // URL 불러오기 버튼
         const loadingIndicator = document.getElementById('loading-indicator'); // 로딩 인디케이터
 
         const categorySelect = document.getElementById('category-select');
@@ -525,40 +519,6 @@
                 alertMessage("텍스트 데이터가 성공적으로 불러와졌습니다!");
             } else {
                 alertMessage("텍스트 데이터가 없거나 형식이 올바르지 않습니다.");
-            }
-        }
-
-        /**
-         * Google 스프레드시트 공개 CSV URL에서 데이터를 비동기적으로 로드합니다.
-         */
-        async function loadCsvFromUrl() {
-            const url = csvUrlInput.value.trim();
-            if (!url) {
-                alertMessage("CSV URL을 입력해주세요!");
-                return;
-            }
-
-            loadingIndicator.style.display = 'block'; // 로딩 인디케이터 표시
-            try {
-                const response = await fetch(url);
-                if (!response.ok) {
-                    throw new Error(`HTTP 오류! 상태: ${response.status}`);
-                }
-                const csvString = await response.text();
-                const newQuizData = parseCsvString(csvString);
-
-                if (newQuizData.length > 0) {
-                    quizData = newQuizData;
-                    updateCategoryDropdown();
-                    alertMessage("URL에서 데이터가 성공적으로 불러와졌습니다!");
-                } else {
-                    alertMessage("URL에서 유효한 퀴즈 데이터를 찾을 수 없습니다. 형식을 확인해주세요.");
-                }
-            } catch (error) {
-                console.error('URL에서 CSV 불러오기 오류:', error);
-                alertMessage(`데이터를 불러오는 중 오류가 발생했습니다: ${error.message}. URL이 올바른지, 웹에 게시되었는지 확인해주세요 (CORS 문제일 수 있습니다).`);
-            } finally {
-                loadingIndicator.style.display = 'none'; // 로딩 인디케이터 숨김
             }
         }
 
@@ -693,10 +653,6 @@
                 clickedButton.classList.add('correct'); // 정답 버튼 색상 변경
                 triggerConfettiAnimation(); // 폭죽 애니메이션
 
-                // 긍정적인 피드백 후 잠시 대기 후 다음 문제로 이동
-                setTimeout(() => {
-                    nextQuestion();
-                }, 1500); // 1.5초 후 다음 문제로
             } else {
                 // 오답일 경우
                 feedbackMessage.textContent = negativeFeedback[Math.floor(Math.random() * negativeFeedback.length)];
@@ -709,10 +665,10 @@
                         button.classList.add('correct');
                     }
                 });
-
-                explanationText.textContent = `정답은 "${currentQuiz[currentQuestionIndex].correctAnswer}" 이었어요. (${currentQuiz[currentQuestionIndex].explanation})`;
-                nextQuestionBtn.classList.remove('hidden'); // 다음 문제 버튼 표시
             }
+
+            explanationText.textContent = `정답은 "${currentQuiz[currentQuestionIndex].correctAnswer}" 이었어요. (${currentQuiz[currentQuestionIndex].explanation})`;
+            nextQuestionBtn.classList.remove('hidden'); // 정답/오답 상관없이 '다음 문제' 버튼 표시
         }
 
         /**
@@ -834,16 +790,14 @@
         document.addEventListener('DOMContentLoaded', initializeGame); // DOM 로드 완료 시 게임 초기화
 
         loadTextCsvBtn.addEventListener('click', loadCsvFromText); // 텍스트 데이터 불러오기 버튼 클릭 시 CSV 파싱
-        loadUrlCsvBtn.addEventListener('click', loadCsvFromUrl); // URL 데이터 불러오기 버튼 클릭 시 URL에서 CSV 로드
 
         startGameBtn.addEventListener('click', startGame); // 게임 시작 버튼 클릭 시 게임 시작
 
-        nextQuestionBtn.addEventListener('click', nextQuestion); // 다음 문제 버튼 클릭 시 다음 문제로 이동
+        // Next Question Button event listener
+        nextQuestionBtn.addEventListener('click', nextQuestion); // '다음 문제' 버튼 클릭 시 다음 문제로 이동
 
-        restartGameBtn.addEventListener('click', initializeGame); // 다시 시작하기 버튼 클릭 시 게임 초기화
-
-        // 텍스트 입력 필드 대신 버튼 클릭으로 정답 확인
-        // answerInput.addEventListener('keypress', (event) => { ... }); // 이 부분은 이제 필요 없습니다.
+        // Restart Game Button event listener
+        restartGameBtn.addEventListener('click', initializeGame); // '다시 시작하기' 버튼 클릭 시 게임 초기화
     </script>
 </body>
 </html>
